@@ -1,6 +1,4 @@
-package ProjectForkJoin;
 
-import java.util.Arrays;
 
 public class CreateMatrix {
 

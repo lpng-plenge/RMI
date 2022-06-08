@@ -1,6 +1,4 @@
-package AlgoritmosSecuenciales;
 
-import java.util.Arrays;
 
 public class MatrixAdd {
 
