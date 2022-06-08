@@ -44,6 +44,18 @@ public class ConfiguracionUsuario extends JFrame {
         }
     }
 
+    private void conectar() throws RemoteException, NotBoundException, MalformedURLException{
+        String clientName = txtUsuario.getText();
+        String host = txtIP.getText();
+        String chatRoom = txtGroup.getText();
+
+        ChatServer server = (ChatServer) Naming.lookup("rmi://" + host + "/" + chatRoom);
+
+        ProjectForkJoin projectForkJoin = new ProjectForkJoin(server, clientName);
+        projectForkJoin.setVisible(true);
+        this.setVisible(false);
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -154,15 +166,7 @@ public class ConfiguracionUsuario extends JFrame {
 
     private void btnEjecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEjecutarActionPerformed
         try {
-            String clientName = txtUsuario.getText();
-            String host = txtIP.getText();
-            String chatRoom = txtGroup.getText();
-
-            ChatServer server = (ChatServer) Naming.lookup("rmi://" + host + "/" + chatRoom);
-
-            ProjectForkJoin projectForkJoin = new ProjectForkJoin(server, clientName);
-            projectForkJoin.setVisible(true);
-            this.setVisible(false);
+            conectar();
         } catch (RemoteException ex) {
             JOptionPane.showMessageDialog(null, "No existe esa direccion que intenta acceder!");
             this.dispose();
