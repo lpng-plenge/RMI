@@ -19,6 +19,5 @@ public interface ChatClient extends Remote {
     void showMessage(String from, String message) throws RemoteException;
     
     //mostrar matriz resultante
-    void showMatrix(double[][] result) throws RemoteException;
-            
+    
 }

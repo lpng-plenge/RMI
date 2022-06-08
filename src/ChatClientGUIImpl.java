@@ -38,9 +38,5 @@ public class ChatClientGUIImpl extends UnicastRemoteObject implements ChatClient
         this.chatArea.append("Message from: "+from+ ": "+message+"\r\n");
     }
 
-    @Override
-    public void showMatrix(double[][] result) throws RemoteException {
-        
-    }
 
 }
