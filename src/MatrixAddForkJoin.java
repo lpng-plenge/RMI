@@ -1,5 +1,4 @@
 
-
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 
@@ -10,12 +9,20 @@ public class MatrixAddForkJoin {
     static double[][] A, B;
     static double[][] answ;
 
-    public void matrixAdd(double[][] A, double[][] B, int T) {
+    public void matrixAdd(double[][] A, double[][] B, int T, int dividirArriba, int dividirAbajo) {
         ForkJoinPool forkJoinPool = new ForkJoinPool();
-        forkJoinPool.invoke(new MatrixSuma(A, B, T));
+
+        if (dividirArriba == 0 && dividirAbajo == 0) {
+            forkJoinPool.invoke(new MatrixSuma(A, B, T, 0, A.length, 0, A[0].length));
+        } else if (dividirArriba != 0 && dividirAbajo == 0) {
+            forkJoinPool.invoke(new MatrixSuma(A, B, T, A.length / dividirArriba, A.length, 0, A[0].length));
+        } else if (dividirArriba == 0 && dividirAbajo != 0) {
+            forkJoinPool.invoke(new MatrixSuma(A, B, T, 0, A.length / dividirAbajo, 0, A[0].length));
+        }
+
     }
 
-    public double [][] getResultados() {
+    public double[][] getResultados() {
         return this.answ;
     }
 
@@ -24,8 +31,9 @@ public class MatrixAddForkJoin {
         private final int i1, i2;
         private final int j1, j2;
 
-        MatrixSuma(double[][] A, double[][] B, int T) {
-            this(0, A.length, 0, A[0].length);
+        MatrixSuma(double[][] A, double[][] B, int T, int i1, int i2, int j1, int j2) {
+            //this(0, A.length, 0, A[0].length);
+            this(i1, i2, j1, j2);
 
             MatrixAddForkJoin.THRESHOLD = T;
             MatrixAddForkJoin.A = A;

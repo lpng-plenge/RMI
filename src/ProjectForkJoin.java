@@ -22,14 +22,14 @@ public class ProjectForkJoin extends JFrame {
 
     private ProjectForkJoin(ChatServer server, String clientName) throws RemoteException {
         super("Client Name - " + clientName);
-        //servidor
         this.server = server;
         this.name = clientName;
-        frame = new ChatFrame(server, name);
         //window
         Dimension dimWindow = Toolkit.getDefaultToolkit().getScreenSize();
         setBounds(dimWindow.width / 10, dimWindow.height / 10, dimWindow.width / 2, dimWindow.height / 2);
         initComponents();
+        //chat frame
+        frame = new ChatFrame(server, name);
         this.setupEvents();
     }
 
@@ -41,6 +41,17 @@ public class ProjectForkJoin extends JFrame {
         });
     }
 
+    private void logout() {
+        try {
+            this.server.logout(this.name);
+        } catch (Exception se) {
+            se.printStackTrace();
+        }
+        this.dispose();
+        System.exit(0);
+    }
+
+    //
     //Solucion 
     private void operacionMatricesSecuencialSuma(CreateMatrix matrix) {
         long inicio;
@@ -74,7 +85,7 @@ public class ProjectForkJoin extends JFrame {
         //MatrixAddForkJoin2 forkAdd = new MatrixAddForkJoin2();
         inicio = System.currentTimeMillis();
         //forkAdd.matrixAdd(matrix.getMatrixA(), matrix.getMatrixB());
-        forkAdd.matrixAdd(matrix.getMatrixA(), matrix.getMatrixB(), 100);
+        forkAdd.matrixAdd(matrix.getMatrixA(), matrix.getMatrixB(), 100,0,0);
         this.lblConcuAnsSuma.setText(Integer.toString((int) (System.currentTimeMillis() - inicio)));
         for (int i = 0; i < forkAdd.getResultados().length; i++) {
             txtAreaSumaCon.append(Arrays.toString(forkAdd.getResultados()[i]) + "\r\n");
@@ -86,11 +97,50 @@ public class ProjectForkJoin extends JFrame {
         //Concurrencia
         MatrixMultiForkJoin forkMulti = new MatrixMultiForkJoin();
         inicio = System.currentTimeMillis();
-        forkMulti.matrixMulti(matrix.getMatrixA(), matrix.getMatrixB());
+        forkMulti.matrixMulti(matrix.getMatrixA(), matrix.getMatrixB(), 0, 0);
         this.lblConcuAnsMulti.setText(Integer.toString((int) (System.currentTimeMillis() - inicio)));
         for (int i = 0; i < forkMulti.getResultados().length; i++) {
             txtAreaMultiCon.append(Arrays.toString(forkMulti.getResultados()[i]) + "\r\n");
         }
+    }
+
+    private void operacionMatrizParalelaSuma(CreateMatrix matrix, String clientName, int dividir) throws RemoteException {
+        long inicio;
+        inicio = System.currentTimeMillis();
+        server.sendMatrix(name, clientName, matrix.getMatrixA(), matrix.getMatrixB(), "Add", dividir);
+        server.getMatrix();
+        this.lblParaleloAnsSuma.setText(Integer.toString((int) (System.currentTimeMillis() - inicio)));
+        
+        MatrixAddForkJoin forkAdd = new MatrixAddForkJoin();
+        forkAdd.matrixAdd(matrix.getMatrixA(), matrix.getMatrixB(), 100,0,dividir);
+        
+        //imprimir resultados
+        for (int i = 0; i < forkAdd.getResultados().length /(dividir); i++) {
+            txtAreaSumaParalelo.append(Arrays.toString(forkAdd.getResultados()[i]) + "\r\n");
+        }
+        for (int i =server.getMatrix().length/(dividir); i < server.getMatrix().length; i++) {
+            txtAreaSumaParalelo.append(Arrays.toString(server.getMatrix()[i]) + "\r\n");
+        }
+    }
+
+    private void operacionMatrizParalelaMulti(CreateMatrix matrix, String clientName, int dividir) throws RemoteException {
+        long inicio;
+        inicio = System.currentTimeMillis();
+        server.sendMatrix(name, clientName, matrix.getMatrixA(), matrix.getMatrixB(), "Multi", dividir);
+        server.getMatrix();
+        //dentro de la pc
+        MatrixMultiForkJoin forkMulti = new MatrixMultiForkJoin();
+        forkMulti.matrixMulti(matrix.getMatrixA(), matrix.getMatrixB(), 0, dividir);
+        this.lblParaleloAnsMulti.setText(Integer.toString((int) (System.currentTimeMillis() - inicio)));
+        
+        //imprimir resultados
+        for (int i = 0; i < forkMulti.getResultados().length /(dividir); i++) {
+            txtAreaMultiParalelo.append(Arrays.toString(forkMulti.getResultados()[i]) + "\r\n");
+        }
+        for (int i =server.getMatrix().length/(dividir); i < server.getMatrix().length; i++) {
+            txtAreaMultiParalelo.append(Arrays.toString(server.getMatrix()[i]) + "\r\n");
+        }
+
     }
 
     private void clearTxt() {
@@ -336,6 +386,7 @@ public class ProjectForkJoin extends JFrame {
         txtAreaSumaSec.setRows(5);
         jScrollPane5.setViewportView(txtAreaSumaSec);
 
+        txtAreaMatrizA.setEditable(false);
         txtAreaMatrizA.setColumns(20);
         txtAreaMatrizA.setRows(5);
         jScrollPane6.setViewportView(txtAreaMatrizA);
@@ -344,6 +395,7 @@ public class ProjectForkJoin extends JFrame {
         jLabel13.setForeground(new java.awt.Color(255, 0, 0));
         jLabel13.setText("Matriz A");
 
+        txtAreaMatrizB.setEditable(false);
         txtAreaMatrizB.setColumns(20);
         txtAreaMatrizB.setRows(5);
         jScrollPane7.setViewportView(txtAreaMatrizB);
@@ -609,26 +661,48 @@ public class ProjectForkJoin extends JFrame {
                 }
                 break;
             case 2:
-                //Paso secuencial de dividir la matriz entre computadoras
+                //Asignar a las computadoras correspondientes
+                String[] clientNames = frame.clientList.getSelectedItems();
+                int i = 1;
                 if (this.chkMulti.isSelected() && this.chkSuma.isSelected()) {
-                    //dividir la matriz para enviar
 
-                    //solucionar por la parte correspondiente
-                    //operacionMatrizConcurrenciaMulti(matrix);
-                    //operacionMatrizConcurrenciaSuma(matrix);
-                    //juntar
+                    for (String clientName : clientNames) {
+                        i++;
+                        try {
+                            frame.chatArea.append("Sent matrix to: " + clientName + "\r\n");
+                            //Solucionar Matriz
+                            operacionMatrizParalelaMulti(matrix, clientName, i);
+                            operacionMatrizParalelaSuma(matrix, clientName, i);
+                        } catch (RemoteException re) {
+                            re.printStackTrace();
+                            frame.chatArea.append("Send matrix failes for: " + clientName + "\r\n");
+                        }
+                    }
                 } else if (this.chkMulti.isSelected()) {
-                    //dividir la matriz para enviar
+                    for (String clientName : clientNames) {
+                        i++;
+                        try {
+                            frame.chatArea.append("Sent matrix to: " + clientName + "\r\n");
+                            //Solucionar Matriz
+                            operacionMatrizParalelaMulti(matrix, clientName, i);
+                        } catch (RemoteException re) {
+                            re.printStackTrace();
+                            frame.chatArea.append("Send matrix failes for: " + clientName + "\r\n");
+                        }
 
-                    //solucionar por la parte correspondiente
-                    //operacionMatrizConcurrenciaMulti(matrix);
-                    //juntar
+                    }
                 } else if (this.chkSuma.isSelected()) {
-                    //dividir la matriz para enviar
-
-                    //solucionar por la parte correspondiente
-                    //operacionMatrizConcurrenciaSuma(matrix);
-                    //juntar
+                    for (String clientName : clientNames) {
+                        i++;
+                        try {
+                            frame.chatArea.append("Sent matrix to: " + clientName + "\r\n");
+                            //Solucionar Matriz
+                            operacionMatrizParalelaSuma(matrix, clientName, i);
+                        } catch (RemoteException re) {
+                            re.printStackTrace();
+                            frame.chatArea.append("Send matrix failes for: " + clientName + "\r\n");
+                        }
+                    }
                 } else {
                     javax.swing.JOptionPane.showMessageDialog(this, "Seleciona Una Opcion");
                 }
@@ -645,17 +719,6 @@ public class ProjectForkJoin extends JFrame {
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         logout();
     }//GEN-LAST:event_jMenuItem2ActionPerformed
-
-    private void logout() {
-        try {
-            this.server.logout(this.name);
-        } catch (Exception se) {
-            se.printStackTrace();
-        }
-        this.dispose();
-        System.exit(0);
-    }
-
     public static void main(String args[]) throws Exception {
         String clientName = args[0];
         String host = args[1];
@@ -711,8 +774,8 @@ public class ProjectForkJoin extends JFrame {
     private javax.swing.JLabel lblSecuAnsMulti;
     private javax.swing.JLabel lblSecuAnsSuma;
     private javax.swing.JSpinner spnMatrixValue;
-    private javax.swing.JTextArea txtAreaMatrizA;
-    private javax.swing.JTextArea txtAreaMatrizB;
+    public javax.swing.JTextArea txtAreaMatrizA;
+    public javax.swing.JTextArea txtAreaMatrizB;
     private javax.swing.JTextArea txtAreaMultiCon;
     private javax.swing.JTextArea txtAreaMultiParalelo;
     private javax.swing.JTextArea txtAreaMultiSec;

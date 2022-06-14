@@ -1,5 +1,4 @@
 
-
 public class CreateMatrix {
 
     private double[][] A, B;

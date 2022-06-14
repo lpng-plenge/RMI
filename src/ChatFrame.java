@@ -16,18 +16,21 @@ public class ChatFrame extends Frame {
     private ChatServer server;
     private ChatClient client;
     private String name;
-    private TextArea chatArea = new TextArea(20, 70);
     private TextArea entryArea = new TextArea(5, 70);
-    private List clientList = new List(20, true);
     private Button sendButton = new Button("Send");
     private Button logoutButton = new Button("Close");
-
+    private ProjectForkJoin pj;
+    public List clientList = new List(20, true);
+    public TextArea chatArea = new TextArea(20, 70);
+    
     public ChatFrame(ChatServer server, String clientName) throws RemoteException {
         super("Chat Client - " + clientName);
         this.server = server;
         this.name = clientName;
-        this.client = new ChatClientGUIImpl(clientName, clientList, chatArea);
         this.setBounds(0, 0, 700, 500);
+        
+        this.client = new ChatClientGUIImpl(clientName, clientList, chatArea);
+        
         String[] clientNames = server.login(client);
         for (String client : clientNames) {
             clientList.add(client);

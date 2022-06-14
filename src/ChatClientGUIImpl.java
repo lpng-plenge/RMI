@@ -1,6 +1,4 @@
 
-
-
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.RemoteException;
 import java.awt.List;
@@ -16,6 +14,7 @@ public class ChatClientGUIImpl extends UnicastRemoteObject implements ChatClient
         this.name = n;
         this.clientList = l;
         this.chatArea = ta;
+
     }
 
     @Override
@@ -35,8 +34,21 @@ public class ChatClientGUIImpl extends UnicastRemoteObject implements ChatClient
 
     @Override
     public void showMessage(String from, String message) {
-        this.chatArea.append("Message from: "+from+ ": "+message+"\r\n");
+        this.chatArea.append("Message from: " + from + ": " + message + "\r\n");
     }
 
+    @Override
+    public double[][] resolveMatrix(String from, double[][] matrixA, double[][] matrixB, String type, int dividir) throws RemoteException {
+        this.chatArea.append("Matrix from: " + from + "\r\n");
+        //agregar que parte realizara
+        ParallelMatrix matrix = new ParallelMatrix(matrixA, matrixB, dividir, 0);
 
+        if (type.equals("Multi")) {
+            matrix.setMultiConcurrencia();
+        } else if (type.equals("Add")) {
+            matrix.setAddMatrixConcurrencia();
+        }
+
+        return matrix.getResultado();
+    }
 }
