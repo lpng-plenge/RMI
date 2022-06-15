@@ -2,7 +2,7 @@
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 
-public class MatrixMultiForkJoin {
+public class MatrixMultiConcurrency {
 
     static double[][] answ;
 
@@ -11,13 +11,10 @@ public class MatrixMultiForkJoin {
         ForkJoinPool forkJoinPool = new ForkJoinPool();
 
         if (dividirArriba == 0 && dividirAbajo == 0) {
-            System.out.println("Arriba tiene:" + dividirArriba + "\nAbajo Tiene:" + dividirAbajo);
             forkJoinPool.invoke(new MultiRow(A, B, A.length, A[0].length, B.length, B[0].length, 0, A.length - 1, helper));
         } else if (dividirArriba == 0 && dividirAbajo != 0) {
-            System.out.println("Arriba tiene:" + dividirArriba + "\nAbajo Tiene:" + dividirAbajo);
             forkJoinPool.invoke(new MultiRow(A, B, A.length, A[0].length, B.length, B[0].length, 0, dividirAbajo - 1, helper));
         } else if (dividirArriba != 0 && dividirAbajo != 0) {
-            System.out.println("Arriba tiene:" + dividirArriba + "\nAbajo Tiene:" + dividirAbajo);
             forkJoinPool.invoke(new MultiRow(A, B, A.length, A[0].length, B.length, B[0].length, dividirArriba, dividirAbajo - 1, helper));
         }
 

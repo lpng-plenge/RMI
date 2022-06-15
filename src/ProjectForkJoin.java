@@ -1,18 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 
 public class ProjectForkJoin extends JFrame {
@@ -22,7 +14,7 @@ public class ProjectForkJoin extends JFrame {
     private String name;
     private ChatFrame frame;
 
-    private ProjectForkJoin(ChatServer server, String clientName) throws RemoteException {
+    ProjectForkJoin(ChatServer server, String clientName) throws RemoteException {
         super("Client Name - " + clientName);
         this.server = server;
         this.name = clientName;
@@ -60,7 +52,7 @@ public class ProjectForkJoin extends JFrame {
 
         //Secuencial
         inicio = System.currentTimeMillis();
-        MatrixAdd matrixAdd = new MatrixAdd(matrix.getMatrixA(), matrix.getMatrixB());
+        MatrixAddSecuencial matrixAdd = new MatrixAddSecuencial(matrix.getMatrixA(), matrix.getMatrixB());
         this.lblSecuAnsSuma.setText(Integer.toString((int) (System.currentTimeMillis() - inicio)));
 
         for (int i = 0; i < matrixAdd.getResultados().length; i++) {
@@ -72,7 +64,7 @@ public class ProjectForkJoin extends JFrame {
         long inicio;
         //Secuencial
         inicio = System.currentTimeMillis();
-        MatrixMulti matrixMulti = new MatrixMulti(matrix.getMatrixA(), matrix.getMatrixB());
+        MatrixMultiSecuencial matrixMulti = new MatrixMultiSecuencial(matrix.getMatrixA(), matrix.getMatrixB());
         this.lblSecuAnsMulti.setText(Integer.toString((int) (System.currentTimeMillis() - inicio)));
 
         for (int i = 0; i < matrixMulti.getResultados().length; i++) {
@@ -83,7 +75,7 @@ public class ProjectForkJoin extends JFrame {
     private void operacionMatrizConcurrenciaSuma(CreateMatrix matrix) {
         long inicio;
         //Concurrencia
-        MatrixAddForkJoin forkAdd = new MatrixAddForkJoin();
+        MatrixAddConcurrency forkAdd = new MatrixAddConcurrency();
         //MatrixAddForkJoin2 forkAdd = new MatrixAddForkJoin2();
         inicio = System.currentTimeMillis();
         //forkAdd.matrixAdd(matrix.getMatrixA(), matrix.getMatrixB());
@@ -97,7 +89,7 @@ public class ProjectForkJoin extends JFrame {
     private void operacionMatrizConcurrenciaMulti(CreateMatrix matrix) {
         long inicio;
         //Concurrencia
-        MatrixMultiForkJoin forkMulti = new MatrixMultiForkJoin();
+        MatrixMultiConcurrency forkMulti = new MatrixMultiConcurrency();
         inicio = System.currentTimeMillis();
         forkMulti.matrixMulti(matrix.getMatrixA(), matrix.getMatrixB(), 0, 0);
         this.lblConcuAnsMulti.setText(Integer.toString((int) (System.currentTimeMillis() - inicio)));
@@ -110,7 +102,7 @@ public class ProjectForkJoin extends JFrame {
         long inicio, impresion;
         int dividirAbajo = numeroSaltos, dividirArriba = 0, posicion = 0;
         //dentro pc
-        MatrixAddForkJoin forkAdd = new MatrixAddForkJoin();
+        MatrixAddConcurrency forkAdd = new MatrixAddConcurrency();
         inicio = System.currentTimeMillis();
 
         forkAdd.matrixAdd(matrix.getMatrixA(), matrix.getMatrixB(), 100, dividirArriba, dividirAbajo);
@@ -155,7 +147,7 @@ public class ProjectForkJoin extends JFrame {
         int dividirAbajo = numeroSaltos, dividirArriba = 0, posicion = 0;
         
         //dentro de la pc
-        MatrixMultiForkJoin forkMulti = new MatrixMultiForkJoin();
+        MatrixMultiConcurrency forkMulti = new MatrixMultiConcurrency();
         inicio = System.currentTimeMillis();
 
         forkMulti.matrixMulti(matrix.getMatrixA(), matrix.getMatrixB(), dividirArriba, dividirAbajo);
@@ -746,16 +738,7 @@ public class ProjectForkJoin extends JFrame {
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         logout();
     }//GEN-LAST:event_jMenuItem2ActionPerformed
-    public static void main(String args[]) throws Exception {
-        String clientName = args[0];
-        String host = args[1];
-        String chatRoom = args[2];
-
-        //Buscar el servidor
-        ChatServer server = (ChatServer) Naming.lookup("rmi://" + host + "/" + chatRoom);
-        ProjectForkJoin projectForkJoin = new ProjectForkJoin(server, clientName);
-        projectForkJoin.setVisible(true);
-    }
+        
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel PanelDatosGral;
     private javax.swing.JLabel PanelPrincipal;

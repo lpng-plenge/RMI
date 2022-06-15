@@ -19,7 +19,7 @@ public class ParallelMatrix {
     }
 
     public void setMultiConcurrencia() {
-        MatrixMultiForkJoin forkMulti = new MatrixMultiForkJoin();
+        MatrixMultiConcurrency forkMulti = new MatrixMultiConcurrency();
         forkMulti.matrixMulti(this.A, this.B, this.dividirArriba, this.dividirAbajo);
         this.answ = forkMulti.getResultados().clone();
     }
@@ -30,7 +30,7 @@ public class ParallelMatrix {
         }
     }
     public void  setAddMatrixConcurrencia(){
-        MatrixAddForkJoin forkJoin = new MatrixAddForkJoin();
+        MatrixAddConcurrency forkJoin = new MatrixAddConcurrency();
         forkJoin.matrixAdd(this.A, this.B, 100, dividirArriba, dividirAbajo);
         this.answ = forkJoin.getResultados();
     }
