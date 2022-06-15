@@ -11,15 +11,14 @@ public class MatrixAddForkJoin {
 
     public void matrixAdd(double[][] A, double[][] B, int T, int dividirArriba, int dividirAbajo) {
         ForkJoinPool forkJoinPool = new ForkJoinPool();
-
+        
         if (dividirArriba == 0 && dividirAbajo == 0) {
             forkJoinPool.invoke(new MatrixSuma(A, B, T, 0, A.length, 0, A[0].length));
-        } else if (dividirArriba != 0 && dividirAbajo == 0) {
-            forkJoinPool.invoke(new MatrixSuma(A, B, T, A.length / dividirArriba, A.length, 0, A[0].length));
         } else if (dividirArriba == 0 && dividirAbajo != 0) {
-            forkJoinPool.invoke(new MatrixSuma(A, B, T, 0, A.length / dividirAbajo, 0, A[0].length));
+            forkJoinPool.invoke(new MatrixSuma(A, B, T, 0, dividirAbajo, 0, A[0].length));
+        } else if (dividirArriba != 0 && dividirAbajo != 0) {
+            forkJoinPool.invoke(new MatrixSuma(A, B, T, dividirArriba, dividirAbajo, 0, A[0].length));
         }
-
     }
 
     public double[][] getResultados() {

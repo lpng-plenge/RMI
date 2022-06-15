@@ -19,9 +19,9 @@ public interface ChatServer extends Remote {
     void sendMessage(String from, String message) throws RemoteException;
     
     //matrix
-    void sendMatrix(String from, String to, double[][] matrixA, double[][] matrixB, String type, int dividir) throws RemoteException;
+    void sendMatrix(String from, String to, double[][] matrixA, double[][] matrixB, String type, int dividirArriba, int dividirAbajo) throws RemoteException;
 
-    void sendMatrix(String from, double[][] matrixA, double[][] matrixB, String type, int dividir) throws RemoteException;
+    void sendMatrix(String from, double[][] matrixA, double[][] matrixB, String type, int dividirArriba, int dividirAbajo) throws RemoteException;
         
     //LogOut
     void logout(String name) throws RemoteException;

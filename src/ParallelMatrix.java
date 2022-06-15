@@ -15,6 +15,7 @@ public class ParallelMatrix {
         this.B = matrixB.clone();
         this.dividirArriba = dividirArriba;
         this.dividirAbajo = dividirAbajo;
+        
     }
 
     public void setMultiConcurrencia() {

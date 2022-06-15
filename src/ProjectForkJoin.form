@@ -407,7 +407,6 @@
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="ff" green="8f" red="0" type="rgb"/>
             </Property>
-            <Property name="selected" type="boolean" value="true"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JCheckBox" name="chkSuma">
@@ -415,6 +414,7 @@
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="ff" green="8f" red="0" type="rgb"/>
             </Property>
+            <Property name="selected" type="boolean" value="true"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JComboBox" name="jCombTipo">
@@ -429,6 +429,7 @@
                 <StringItem index="2" value="Paralelo"/>
               </StringArray>
             </Property>
+            <Property name="selectedIndex" type="int" value="2"/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>

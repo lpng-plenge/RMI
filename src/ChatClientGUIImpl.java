@@ -38,15 +38,17 @@ public class ChatClientGUIImpl extends UnicastRemoteObject implements ChatClient
     }
 
     @Override
-    public double[][] resolveMatrix(String from, double[][] matrixA, double[][] matrixB, String type, int dividir) throws RemoteException {
+    public double[][] resolveMatrix(String from, double[][] matrixA, double[][] matrixB, String type, int dividirArriba, int dividirAbajo) throws RemoteException {
         this.chatArea.append("Matrix from: " + from + "\r\n");
         //agregar que parte realizara
-        ParallelMatrix matrix = new ParallelMatrix(matrixA, matrixB, dividir, 0);
+        ParallelMatrix matrix = new ParallelMatrix(matrixA, matrixB, dividirArriba, dividirAbajo);
 
         if (type.equals("Multi")) {
             matrix.setMultiConcurrencia();
+            //matrix.printParalelo();
         } else if (type.equals("Add")) {
             matrix.setAddMatrixConcurrencia();
+            //matrix.printParalelo();
         }
 
         return matrix.getResultado();

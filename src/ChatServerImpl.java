@@ -56,16 +56,16 @@ public class ChatServerImpl extends UnicastRemoteObject implements ChatServer {
     }
 
     @Override
-    public void sendMatrix(String from, String to, double[][] matrixA, double[][] matrixB, String type, int dividir) throws RemoteException {
+    public void sendMatrix(String from, String to, double[][] matrixA, double[][] matrixB, String type, int dividirArriba, int dividirAbajo) throws RemoteException {
         answ = new double[matrixA.length][matrixB[0].length]; 
-        answ=clientMap.get(to).resolveMatrix(from, matrixA, matrixB, type, dividir).clone();
+        answ=clientMap.get(to).resolveMatrix(from, matrixA, matrixB, type, dividirArriba, dividirAbajo).clone();
     }
 
     @Override
-    public void sendMatrix(String from, double[][] matrixA, double[][] matrixB, String type, int dividir) throws RemoteException {
+    public void sendMatrix(String from, double[][] matrixA, double[][] matrixB, String type, int dividirArriba, int dividirAbajo) throws RemoteException {
         String[] clientNames = list();
         for (String clientName : clientNames) {
-            sendMatrix(from, clientName, matrixA, matrixB, type, dividir);
+            sendMatrix(from, clientName, matrixA, matrixB, type, dividirArriba, dividirAbajo);
         }
     }
 
